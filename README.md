@@ -164,7 +164,8 @@ $TOMCAT_HOME/bin/startup.bat   # Windows
 - **数据库**：MySQL 8.0+，`utf8mb4` 字符集，支持 emoji
 - **连接池**：DBUtil 单例管理数据库连接
 - **密码安全**：PasswordUtil 加盐哈希存储
-- **配置管理**：ConfigUtil 读取 `db.properties`，支持环境切换
+- **配置管理**：ConfigUtil 读取 `db.properties`，DBUtil 提供回退默认值，支持环境切换
+- **运行时配置**：`system_config` 表支持动态参数调整，无需重启
 
 ---
 
@@ -340,8 +341,12 @@ CanteenEvaluate/
 │   │   ├── eval-v3.css                # 评价模块专属样式
 │   │   └── style.css                  # 基础样式
 │   ├── images/
-│   │   └── logo.svg                   # 站点 Logo
+│   │   └── logo.svg                   # 原创站点 Logo
+│   ├── js/
+│   │   └── modern-app.js              # 前端工具函数（Toast/Modal/AJAX）
 │   └── admin/                         # 管理后台 (7 个页面)
+│       ├── js/
+│       │   └── admin-modern.js        # 后台工具函数
 │       ├── adminIndex.jsp             # 控制台面板
 │       ├── userManage.jsp             # 用户管理
 │       ├── restaurantManage.jsp       # 餐厅管理
@@ -433,7 +438,7 @@ $TOMCAT_HOME/bin/startup.sh
 
 | 版本 | 日期 | 核心变更 |
 |:---|:---|:---|
-| **V1.0** | 2026-07 | 🍜 正式发布：用户注册登录（含验证码/游客模式）；全站评价浏览（排序/筛选/分页）；三维评分发布与编辑；寻味雷达智能推荐引擎（心情+预算双维度）；美食热榜（餐厅/菜品/创作者三榜）；味蕾档案人格画像（6 种标签 + 成就徽章）；想吃清单管理；管理后台（控制台/用户/餐厅/评价/公告/数据洞察/日志）；管理员登录彩蛋入口；首页公告跑马灯；品牌更名为山海寻味录；数据库初始化脚本 `sql/canteen_db.sql` |
+| **V1.0** | 2026-07 | 🍜 正式发布 — 山海寻味录：用户注册登录（验证码 + 游客模式）；全站评价浏览（排序/筛选/分页）；三维评分（口味/价格/服务）发布与编辑；寻味雷达智能推荐引擎（心情 × 预算双维度）；美食热榜（餐厅/菜品/创作者三榜 + 热度算法）；味蕾档案人格画像（6 种标签 + 成就徽章）；想吃清单管理；管理后台（控制台/用户/餐厅/评价/公告/数据洞察/操作日志）；管理员登录彩蛋入口；首页公告跑马灯；数据库初始化脚本 `sql/canteen_db.sql`（7 张表 + 种子数据）；原创 SVG Logo；db.properties.example 配置模板；.gitignore 敏感信息防护 |
 
 ---
 
