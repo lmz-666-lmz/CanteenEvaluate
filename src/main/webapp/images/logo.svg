@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F766E"/>
+      <stop offset="50%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#E2E8F0;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Circle background -->
+  <circle cx="60" cy="60" r="58" fill="url(#bg)"/>
+  <circle cx="60" cy="60" r="58" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+
+  <!-- Bowl shape -->
+  <path d="M30 54 Q30 82 60 86 Q90 82 90 54 Z" fill="url(#bowl)" opacity="0.95"/>
+
+  <!-- Bowl rim -->
+  <ellipse cx="60" cy="54" rx="30" ry="7" fill="white" opacity="0.9"/>
+
+  <!-- Steam lines -->
+  <path d="M46 48 Q44 38 48 30" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7">
+    <animate attributeName="d" values="M46 48 Q44 38 48 30;M46 48 Q48 38 44 30;M46 48 Q44 38 48 30" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M60 46 Q58 34 62 26" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7">
+    <animate attributeName="d" values="M60 46 Q58 34 62 26;M60 46 Q62 34 58 26;M60 46 Q58 34 62 26" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.4;0.7" dur="3.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M74 48 Q76 38 72 30" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7">
+    <animate attributeName="d" values="M74 48 Q76 38 72 30;M74 48 Q72 38 76 30;M74 48 Q76 38 72 30" dur="4s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Chopsticks -->
+  <line x1="72" y1="28" x2="74" y2="62" stroke="#D4A574" stroke-width="3" stroke-linecap="round"/>
+  <line x1="80" y1="28" x2="82" y2="62" stroke="#D4A574" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- "SH" text below bowl -->
+  <text x="60" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="2">SH</text>
+</svg>

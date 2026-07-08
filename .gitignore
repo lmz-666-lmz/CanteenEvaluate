@@ -1,0 +1,16 @@
+# Eclipse / IDE
+.settings/
+.classpath
+.project
+
+# Build output
+build/
+target/
+*.class
+
+# Logs
+*.log
+
+# Sensitive config
+.env
+src/main/resources/db.properties
