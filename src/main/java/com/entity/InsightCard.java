@@ -15,6 +15,12 @@ public class InsightCard {
     private double priceAvg;
     private double serviceAvg;
     private double heatScore;
+    private String location;
+    private String tags;
+    private double avgCost;
+    private int status = 1;
+    private String coverColor;
+    private String recommendType;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -44,4 +50,35 @@ public class InsightCard {
     public void setServiceAvg(double serviceAvg) { this.serviceAvg = serviceAvg; }
     public double getHeatScore() { return heatScore; }
     public void setHeatScore(double heatScore) { this.heatScore = heatScore; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
+    public double getAvgCost() { return avgCost; }
+    public void setAvgCost(double avgCost) { this.avgCost = avgCost; }
+    public int getStatus() { return status; }
+    public void setStatus(int status) { this.status = status; }
+    public String getCoverColor() { return coverColor; }
+    public void setCoverColor(String coverColor) { this.coverColor = coverColor; }
+    public String getRecommendType() { return recommendType; }
+    public void setRecommendType(String recommendType) { this.recommendType = recommendType; }
+
+    public String[] getTagArray() {
+        if (tags == null || tags.trim().isEmpty()) {
+            return new String[0];
+        }
+        String[] parts = tags.split(",");
+        java.util.List<String> list = new java.util.ArrayList<>();
+        for (String part : parts) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) {
+                list.add(trimmed);
+            }
+        }
+        return list.toArray(new String[0]);
+    }
+
+    public boolean isFallback() {
+        return id <= 0;
+    }
 }

@@ -88,10 +88,20 @@
             <h3>餐厅热榜</h3>
             <div class="rank-list">
                 <c:forEach items="${restaurantTrends}" var="item">
-                    <div class="rank-item">
-                        <div class="rank-num">${item.rank}</div>
-                        <div class="rank-main"><div class="rank-title"><c:out value="${item.title}"/></div><div class="rank-sub">${item.trendLabel} · <c:out value="${item.reason}"/></div></div>
-                        <div class="rank-score"><fmt:formatNumber value="${item.avgScore}" pattern="#.0"/><small>${item.reviewCount}评</small></div>
+                    <div class="rank-item rank-item-${item.rank <= 3 ? item.rank : 'default'}">
+                        <div class="rank-num rank-num-${item.rank <= 3 ? item.rank : 'default'}">${item.rank}</div>
+                        <div class="rank-main">
+                            <div class="rank-title"><c:out value="${item.title}"/></div>
+                            <div class="rank-sub">${item.trendLabel} · <c:out value="${item.reason}"/></div>
+                            <div class="rank-tags">
+                                <c:forEach items="${item.tagArray}" var="tag"><span class="badge badge-tag"><c:out value="${tag}"/></span></c:forEach>
+                            </div>
+                        </div>
+                        <div class="rank-score">
+                            <strong><fmt:formatNumber value="${item.heatScore}" pattern="#"/></strong>
+                            <small>热度</small>
+                            <span class="rank-avg"><fmt:formatNumber value="${item.avgScore}" pattern="#.0"/> 分 · ${item.reviewCount}评</span>
+                        </div>
                     </div>
                 </c:forEach>
             </div>

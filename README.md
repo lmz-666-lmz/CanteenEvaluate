@@ -13,7 +13,6 @@
   <br>
   基于 JSP + Servlet + MySQL 的 Java Web 全栈项目
 </p>
-
 ---
 
 ## 📑 目录
@@ -410,6 +409,27 @@ $TOMCAT_HOME/bin/startup.sh
 
 ## 🔒 安全提示
 
+### 配置文件管理策略
+
+> ⚠️ **关键配置文件绝不提交到 Git！使用 `.example` 模板文件代替。**
+
+| 配置文件 | 用途 | Git 状态 | 模板文件 |
+|:---|:---|:---|:---|
+| `src/main/resources/db.properties` | 数据库连接配置（含密码） | 🔴 已 gitignore，**不提交** | `db.properties.example` |
+| `src/main/java/com/util/ConfigUtil.java` | 配置读取工具类 | 🟢 提交（回退值使用占位符） | — |
+| `src/main/java/com/util/DBUtil.java` | 数据库连接管理 | 🟢 提交（回退值使用占位符） | — |
+
+**使用流程：**
+
+```bash
+# 1. 克隆项目后，复制 example 文件
+cp src/main/resources/db.properties.example src/main/resources/db.properties
+
+# 2. 编辑 db.properties，填入你的真实数据库信息
+```
+
+> 💡 **原则**：所有包含真实密码、密钥、Token 的配置文件都应提供对应的 `.example` 模板，并在 `.gitignore` 中排除真实文件。
+
 ```text
 ⚠️  db.properties 中的数据库密码请勿提交到 Git（已在 .gitignore 中排除）
 ⚠️  生产环境部署前务必修改 db.properties 中的默认密码
@@ -418,6 +438,7 @@ $TOMCAT_HOME/bin/startup.sh
 ⚠️  管理后台通过 AdminFilter 拦截未授权请求
 ⚠️  验证码机制防止暴力登录
 ⚠️  定期备份 canteen_db 数据库
+⚠️  源码中的 ConfigUtil / DBUtil 回退默认值均为占位符，不可直接用于连接数据库
 ```
 
 ### 密码安全

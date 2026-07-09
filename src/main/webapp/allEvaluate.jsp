@@ -19,19 +19,36 @@
     if (totalPages  == null) totalPages  = 1;
     if (pageSize    == null) pageSize    = 9;
 
+    String keyword = (String) request.getAttribute("keyword");
+    String minScore = (String) request.getAttribute("minScore");
+    if (keyword == null) keyword = "";
+    if (minScore == null) minScore = "";
+
     String restParam = "";
     if (filterRest != null && !filterRest.isEmpty()) {
         try { restParam = "&restaurant=" + URLEncoder.encode(filterRest, "UTF-8"); } catch (Exception ex) {}
     }
+    String kwParam = "";
+    if (!keyword.isEmpty()) {
+        try { kwParam = "&keyword=" + URLEncoder.encode(keyword, "UTF-8"); } catch (Exception ex) {}
+    }
+    String scoreParam = "";
+    if (!minScore.isEmpty()) {
+        try { scoreParam = "&minScore=" + URLEncoder.encode(minScore, "UTF-8"); } catch (Exception ex) {}
+    }
+    String extraParams = restParam + kwParam + scoreParam;
 
     // 暴露给EL使用
     pageContext.setAttribute("_sort", currentSort);
     pageContext.setAttribute("_rest", filterRest);
+    pageContext.setAttribute("_keyword", keyword);
+    pageContext.setAttribute("_minScore", minScore);
     pageContext.setAttribute("_page", currentPage);
     pageContext.setAttribute("_pages", totalPages);
     pageContext.setAttribute("_size", pageSize);
     pageContext.setAttribute("_total", totalCount);
     pageContext.setAttribute("_rparam", restParam);
+    pageContext.setAttribute("_extra", extraParams);
 %>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -90,12 +107,14 @@
     <aside class="ev3-sidebar">
         <div class="ev3-side-title">🍴 餐厅导航</div>
         <a href="AllEvaluateServlet?sort=${_sort}" class="ev3-side-item ${empty _rest ? 'active' : ''}">
-            <span>全部餐厅</span><em><%= totalCount %></em>
+            <span>全部餐厅</span><em>${_total}</em>
         </a>
         <c:forEach items="${restaurantList}" var="r">
             <c:url value="AllEvaluateServlet" var="rUrl">
                 <c:param name="sort" value="${_sort}"/>
                 <c:param name="restaurant" value="${r.name}"/>
+                <c:if test="${not empty _keyword}"><c:param name="keyword" value="${_keyword}"/></c:if>
+                <c:if test="${not empty _minScore}"><c:param name="minScore" value="${_minScore}"/></c:if>
             </c:url>
             <a href="${rUrl}" class="ev3-side-item ${r.name eq _rest ? 'active' : ''}">
                 <span>${r.name}</span><em>›</em>
@@ -106,12 +125,31 @@
     <!-- Content -->
     <main class="ev3-content">
 
+        <!-- Search & Filter -->
+        <form class="ev3-search-bar" action="AllEvaluateServlet" method="get">
+            <input type="hidden" name="sort" value="${_sort}">
+            <input type="hidden" name="pageSize" value="${_size}">
+            <c:if test="${not empty _rest}"><input type="hidden" name="restaurant" value="${_rest}"></c:if>
+            <div class="ev3-search-row">
+                <input type="text" name="keyword" value="${_keyword}" placeholder="搜索菜品名、评价内容或餐厅名..." class="ev3-search-input">
+                <select name="minScore" class="ev3-filter-select">
+                    <option value="" ${_minScore eq '' ? 'selected' : ''}>综合评分：全部</option>
+                    <option value="4" ${_minScore eq '4' ? 'selected' : ''}>4 分以上</option>
+                    <option value="3" ${_minScore eq '3' ? 'selected' : ''}>3 分以上</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">🔍 搜索</button>
+                <% if (!keyword.isEmpty() || !minScore.isEmpty()) { %>
+                <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>" class="btn btn-outline btn-sm">清除</a>
+                <% } %>
+            </div>
+        </form>
+
         <!-- Sort + PageSize -->
         <div class="ev3-topbar">
             <div class="ev3-sorts">
-                <a href="AllEvaluateServlet?sort=newest${_rparam}&pageSize=${_size}" class="ev3-sort ${_sort eq 'newest' ? 'on' : ''}">🕐 最新</a>
-                <a href="AllEvaluateServlet?sort=highest${_rparam}&pageSize=${_size}" class="ev3-sort ${_sort eq 'highest' ? 'on' : ''}">⭐ 最高分</a>
-                <a href="AllEvaluateServlet?sort=most_liked${_rparam}&pageSize=${_size}" class="ev3-sort ${_sort eq 'most_liked' ? 'on' : ''}">👍 最多赞</a>
+                <a href="AllEvaluateServlet?sort=newest${_extra}&pageSize=${_size}" class="ev3-sort ${_sort eq 'newest' ? 'on' : ''}">🕐 最新</a>
+                <a href="AllEvaluateServlet?sort=highest${_extra}&pageSize=${_size}" class="ev3-sort ${_sort eq 'highest' ? 'on' : ''}">⭐ 高分</a>
+                <a href="AllEvaluateServlet?sort=most_liked${_extra}&pageSize=${_size}" class="ev3-sort ${_sort eq 'most_liked' ? 'on' : ''}">🔥 最热</a>
             </div>
             <div class="ev3-pagesize">
                 每页
@@ -131,9 +169,13 @@
 
         <!-- Empty -->
         <c:if test="${empty evalPageList}">
-            <div class="ev3-empty-inline">
-                <p style="font-size:40px;margin-bottom:12px;">🍽️</p>
-                <p>这里还是片美食荒原，<a href="AddEvaluateServlet">去发布第一条评价</a></p>
+            <div class="ev3-empty-card">
+                <div class="ev3-empty-icon">🔍</div>
+                <h3>没有找到相关评价</h3>
+                <p><c:choose>
+                    <c:when test="${not empty _keyword}">试试换个关键词，或<a href="AllEvaluateServlet?sort=${_sort}${_rparam}&pageSize=${_size}">清除搜索条件</a></c:when>
+                    <c:otherwise>这里还是片美食荒原，<a href="AddEvaluateServlet">去发布第一条评价</a></c:otherwise>
+                </c:choose></p>
             </div>
         </c:if>
 
@@ -177,16 +219,16 @@
             <span class="ev3-pager-info">第 <%= currentPage %> / <%= totalPages %> 页，共 <%= totalCount %> 条</span>
             <div class="ev3-pager-btns">
                 <% if (currentPage > 1) { %>
-                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>&page=1" class="ev3-page-btn">««</a>
-                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>&page=<%= currentPage - 1 %>" class="ev3-page-btn">«</a>
+                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize=<%= pageSize %>&page=1" class="ev3-page-btn">««</a>
+                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize=<%= pageSize %>&page=<%= currentPage - 1 %>" class="ev3-page-btn">«</a>
                 <% } %>
                 <% for (int i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
-                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>&page=<%= i %>"
+                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize=<%= pageSize %>&page=<%= i %>"
                        class="ev3-page-btn <%= i == currentPage ? "active" : "" %>"><%= i %></a>
                 <% } %>
                 <% if (currentPage < totalPages) { %>
-                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>&page=<%= currentPage + 1 %>" class="ev3-page-btn">»</a>
-                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize=<%= pageSize %>&page=<%= totalPages %>" class="ev3-page-btn">»»</a>
+                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize=<%= pageSize %>&page=<%= currentPage + 1 %>" class="ev3-page-btn">»</a>
+                    <a href="AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize=<%= pageSize %>&page=<%= totalPages %>" class="ev3-page-btn">»»</a>
                 <% } %>
             </div>
         </div>
@@ -199,7 +241,7 @@
 
 <script src="${pageContext.request.contextPath}/js/modern-app.js"></script>
 <script>
-function changePS(v){ location.href='AllEvaluateServlet?sort=<%= currentSort %><%= restParam %>&pageSize='+v+'&page=1'; }
+function changePS(v){ location.href='AllEvaluateServlet?sort=<%= currentSort %><%= extraParams %>&pageSize='+v+'&page=1'; }
 function doLike(id,btn){
     if(btn.disabled){ModernToast.show('请先登录','warning');return}
     ModernHttp.post('LikeEvaluationServlet',{evalId:id},function(err,res){

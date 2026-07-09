@@ -55,7 +55,8 @@ public class FoodInsightDAO {
     }
 
     public List<InsightCard> getRestaurantTrends(int limit) {
-        String sql = "SELECT r.id, r.name AS title, COUNT(e.id) AS review_count, " +
+        String sql = "SELECT r.id, r.name AS title, r.location, r.tags, r.avg_cost, r.status, r.cover_color, " +
+                "COUNT(e.id) AS review_count, " +
                 "COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) AS avg_score, " +
                 "COALESCE(AVG(e.taste_score),0) AS taste_avg, " +
                 "COALESCE(AVG(e.price_score),0) AS price_avg, " +
@@ -64,9 +65,57 @@ public class FoodInsightDAO {
                 "(COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) * 20 " +
                 " + LOG10(COUNT(e.id) + 1) * 18 + COALESCE(SUM(e.like_count),0) * 1.4) AS heat_score " +
                 "FROM restaurants r LEFT JOIN evaluations e ON e.restaurant_id = r.id " +
-                "GROUP BY r.id, r.name HAVING review_count > 0 " +
+                "GROUP BY r.id, r.name, r.location, r.tags, r.avg_cost, r.status, r.cover_color " +
+                "HAVING review_count > 0 " +
                 "ORDER BY heat_score DESC, avg_score DESC LIMIT ?";
         return queryInsightCards(sql, limit, "restaurant");
+    }
+
+    /**
+     * 首页今日饭点推荐：高分 / 性价比 / 人气
+     */
+    public List<InsightCard> getHomeMealRecommendations() {
+        List<InsightCard> cards = new ArrayList<>();
+        InsightCard highScore = querySingleHomeCard(
+                "SELECT MIN(e.id) AS id, e.dish_name AS title, r.name AS subtitle, r.location, r.tags, " +
+                "r.avg_cost, r.status, r.cover_color, COUNT(*) AS review_count, " +
+                "COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) AS avg_score, " +
+                "COALESCE(AVG(e.taste_score),0) AS taste_avg, COALESCE(AVG(e.price_score),0) AS price_avg, " +
+                "COALESCE(AVG(e.service_score),0) AS service_avg, COALESCE(SUM(e.like_count),0) AS like_count, " +
+                "COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) * 24 AS heat_score " +
+                "FROM evaluations e JOIN restaurants r ON e.restaurant_id = r.id " +
+                "WHERE e.dish_name IS NOT NULL AND TRIM(e.dish_name) <> '' " +
+                "GROUP BY e.restaurant_id, r.name, e.dish_name, r.location, r.tags, r.avg_cost, r.status, r.cover_color " +
+                "ORDER BY avg_score DESC, like_count DESC LIMIT 1",
+                "highscore", "今日高分推荐", "综合评分领先，适合追求味道的同学");
+        InsightCard value = querySingleHomeCard(
+                "SELECT MIN(e.id) AS id, e.dish_name AS title, r.name AS subtitle, r.location, r.tags, " +
+                "r.avg_cost, r.status, r.cover_color, COUNT(*) AS review_count, " +
+                "COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) AS avg_score, " +
+                "COALESCE(AVG(e.taste_score),0) AS taste_avg, COALESCE(AVG(e.price_score),0) AS price_avg, " +
+                "COALESCE(AVG(e.service_score),0) AS service_avg, COALESCE(SUM(e.like_count),0) AS like_count, " +
+                "(COALESCE(AVG(e.price_score),0) * 10 - COALESCE(r.avg_cost, 15) * 0.5) AS heat_score " +
+                "FROM evaluations e JOIN restaurants r ON e.restaurant_id = r.id " +
+                "WHERE e.dish_name IS NOT NULL AND TRIM(e.dish_name) <> '' " +
+                "GROUP BY e.restaurant_id, r.name, e.dish_name, r.location, r.tags, r.avg_cost, r.status, r.cover_color " +
+                "ORDER BY price_avg DESC, r.avg_cost ASC, avg_score DESC LIMIT 1",
+                "value", "性价比推荐", "价格评分高且人均友好，适合日常消费");
+        InsightCard popular = querySingleHomeCard(
+                "SELECT r.id, r.name AS title, r.location, r.tags, r.avg_cost, r.status, r.cover_color, " +
+                "COUNT(e.id) AS review_count, " +
+                "COALESCE(AVG((e.taste_score + e.price_score + e.service_score) / 3.0),0) AS avg_score, " +
+                "COALESCE(AVG(e.taste_score),0) AS taste_avg, COALESCE(AVG(e.price_score),0) AS price_avg, " +
+                "COALESCE(AVG(e.service_score),0) AS service_avg, COALESCE(SUM(e.like_count),0) AS like_count, " +
+                "(COUNT(e.id) * 3 + COALESCE(SUM(e.like_count),0) * 2) AS heat_score " +
+                "FROM restaurants r JOIN evaluations e ON e.restaurant_id = r.id " +
+                "GROUP BY r.id, r.name, r.location, r.tags, r.avg_cost, r.status, r.cover_color " +
+                "ORDER BY review_count DESC, like_count DESC, avg_score DESC LIMIT 1",
+                "popular", "人气餐厅推荐", "评价与点赞集中，适合跟风打卡");
+
+        cards.add(highScore != null ? highScore : fallbackCard("highscore", "今日高分推荐", "招牌盖饭", "第一食堂", "综合评分领先，适合追求味道的同学"));
+        cards.add(value != null ? value : fallbackCard("value", "性价比推荐", "实惠套餐", "生活区餐厅", "价格评分高且人均友好，适合日常消费"));
+        cards.add(popular != null ? popular : fallbackCard("popular", "人气餐厅推荐", "热门窗口", "美食广场", "评价与点赞集中，适合跟风打卡"));
+        return cards;
     }
 
     public List<InsightCard> getDishTrends(int limit) {
@@ -215,6 +264,11 @@ public class FoodInsightDAO {
                     card.setServiceAvg(rs.getDouble("service_avg"));
                     card.setLikeCount(rs.getInt("like_count"));
                     card.setHeatScore(rs.getDouble("heat_score"));
+                    card.setLocation(getStringOrNull(rs, "location"));
+                    card.setTags(getStringOrNull(rs, "tags"));
+                    try { card.setAvgCost(rs.getDouble("avg_cost")); } catch (SQLException ignored) {}
+                    try { card.setStatus(rs.getInt("status")); } catch (SQLException ignored) {}
+                    card.setCoverColor(getStringOrNull(rs, "cover_color"));
                     card.setTrendLabel(makeTrendLabel(card));
                     card.setReason(makeReason(card));
                     list.add(card);
@@ -429,5 +483,51 @@ public class FoodInsightDAO {
 
     private String safe(String text) {
         return text == null ? "" : text;
+    }
+
+    private InsightCard querySingleHomeCard(String sql, String type, String recommendType, String defaultReason) {
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                InsightCard card = new InsightCard();
+                card.setId(rs.getInt("id"));
+                card.setType(type);
+                card.setRecommendType(recommendType);
+                card.setTitle(rs.getString("title"));
+                try { card.setSubtitle(rs.getString("subtitle")); } catch (SQLException ignored) {}
+                card.setReviewCount(rs.getInt("review_count"));
+                card.setAvgScore(rs.getDouble("avg_score"));
+                card.setTasteAvg(rs.getDouble("taste_avg"));
+                card.setPriceAvg(rs.getDouble("price_avg"));
+                card.setServiceAvg(rs.getDouble("service_avg"));
+                card.setLikeCount(rs.getInt("like_count"));
+                card.setHeatScore(rs.getDouble("heat_score"));
+                card.setLocation(getStringOrNull(rs, "location"));
+                card.setTags(getStringOrNull(rs, "tags"));
+                try { card.setAvgCost(rs.getDouble("avg_cost")); } catch (SQLException ignored) {}
+                try { card.setStatus(rs.getInt("status")); } catch (SQLException ignored) {}
+                card.setCoverColor(getStringOrNull(rs, "cover_color"));
+                card.setReason(defaultReason);
+                return card;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private InsightCard fallbackCard(String type, String recommendType, String title, String subtitle, String reason) {
+        InsightCard card = new InsightCard();
+        card.setId(0);
+        card.setType(type);
+        card.setRecommendType(recommendType);
+        card.setTitle(title);
+        card.setSubtitle(subtitle);
+        card.setReason(reason + "（示例推荐，发布更多评价后将自动更新）");
+        card.setAvgScore(4.5);
+        card.setAvgCost(15);
+        card.setCoverColor("#7C3AED");
+        return card;
     }
 }

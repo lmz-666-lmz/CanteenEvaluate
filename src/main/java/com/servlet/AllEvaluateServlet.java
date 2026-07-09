@@ -21,18 +21,27 @@ public class AllEvaluateServlet extends HttpServlet {
         RestaurantDAO restDAO = new RestaurantDAO();
         EvaluationDAO evalDAO = new EvaluationDAO();
 
-        // 餐厅列表（始终需要，侧边栏用）
         List<Restaurant> restList = restDAO.getAllRestaurants();
 
-        // 参数
         String sortBy = request.getParameter("sort");
         if (sortBy == null) sortBy = "newest";
-        String filterRest = request.getParameter("restaurant"); // 筛选特定餐厅
+
+        String filterRest = request.getParameter("restaurant");
         if (filterRest != null && !filterRest.isEmpty()) {
             try { filterRest = URLDecoder.decode(filterRest, "UTF-8"); } catch (Exception ignored) {}
         }
 
-        // 分页参数
+        String keyword = request.getParameter("keyword");
+        if (keyword != null) keyword = keyword.trim();
+
+        double minScore = 0;
+        String minScoreParam = request.getParameter("minScore");
+        if (minScoreParam != null && !minScoreParam.isEmpty()) {
+            try {
+                minScore = Double.parseDouble(minScoreParam);
+            } catch (NumberFormatException ignored) {}
+        }
+
         int page = 1;
         int pageSize = 9;
         try {
@@ -44,7 +53,6 @@ public class AllEvaluateServlet extends HttpServlet {
 
         User currentUser = (User) request.getSession().getAttribute("loginUser");
 
-        // 获取全部评价（含点赞状态）
         List<Evaluation> allEval;
         if (currentUser != null) {
             allEval = evalDAO.getAllEvaluationsWithLikeStatus(currentUser.getId());
@@ -52,7 +60,6 @@ public class AllEvaluateServlet extends HttpServlet {
             allEval = evalDAO.getAllEvaluationsBySort("newest");
         }
 
-        // 内存排序
         if ("highest".equals(sortBy)) {
             allEval.sort((a, b) -> {
                 double aa = (a.getTasteScore() + a.getPriceScore() + a.getServiceScore()) / 3.0;
@@ -63,7 +70,6 @@ public class AllEvaluateServlet extends HttpServlet {
             allEval.sort((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount()));
         }
 
-        // 餐厅筛选
         if (filterRest != null && !filterRest.isEmpty()) {
             List<Evaluation> filtered = new ArrayList<>();
             for (Evaluation e : allEval) {
@@ -74,7 +80,30 @@ public class AllEvaluateServlet extends HttpServlet {
             allEval = filtered;
         }
 
-        // 分页
+        if (keyword != null && !keyword.isEmpty()) {
+            String kw = keyword.toLowerCase(Locale.ROOT);
+            List<Evaluation> filtered = new ArrayList<>();
+            for (Evaluation e : allEval) {
+                if (containsIgnoreCase(e.getDishName(), kw)
+                        || containsIgnoreCase(e.getContent(), kw)
+                        || containsIgnoreCase(e.getRestaurantName(), kw)) {
+                    filtered.add(e);
+                }
+            }
+            allEval = filtered;
+        }
+
+        if (minScore > 0) {
+            List<Evaluation> filtered = new ArrayList<>();
+            for (Evaluation e : allEval) {
+                double avg = (e.getTasteScore() + e.getPriceScore() + e.getServiceScore()) / 3.0;
+                if (avg >= minScore) {
+                    filtered.add(e);
+                }
+            }
+            allEval = filtered;
+        }
+
         int totalCount = allEval.size();
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         if (totalPages < 1) totalPages = 1;
@@ -85,11 +114,12 @@ public class AllEvaluateServlet extends HttpServlet {
         int to = Math.min(from + pageSize, totalCount);
         List<Evaluation> pageList = totalCount > 0 ? allEval.subList(from, to) : new ArrayList<>();
 
-        // 传给JSP
         request.setAttribute("restaurantList", restList);
         request.setAttribute("evalPageList", pageList);
         request.setAttribute("currentSort", sortBy);
         request.setAttribute("filterRest", filterRest);
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("minScore", minScoreParam != null ? minScoreParam : "");
         request.setAttribute("currentPage", page);
         request.setAttribute("pageSize", pageSize);
         request.setAttribute("totalPages", totalPages);
@@ -100,5 +130,9 @@ public class AllEvaluateServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean containsIgnoreCase(String text, String keyword) {
+        return text != null && text.toLowerCase(Locale.ROOT).contains(keyword);
     }
 }

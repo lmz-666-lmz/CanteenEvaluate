@@ -18,18 +18,14 @@ public class RestaurantUpdateServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         int id = Integer.parseInt(request.getParameter("id"));
-        String name = request.getParameter("name");
-
-        Restaurant restaurant = new Restaurant();
+        Restaurant restaurant = RestaurantAddServlet.buildRestaurantFromRequest(request);
         restaurant.setId(id);
-        restaurant.setName(name);
 
         RestaurantDAO restaurantDAO = new RestaurantDAO();
         restaurantDAO.updateRestaurant(restaurant);
 
-        // 记录操作日志
         com.dao.SysLogDAO sysLogDAO = new com.dao.SysLogDAO();
-        sysLogDAO.insertLog("管理员", "修改餐厅", "后台管理员修改ID为" + id + "的餐厅名称：" + name);
+        sysLogDAO.insertLog("管理员", "修改餐厅", "后台管理员修改ID为" + id + "的餐厅：" + restaurant.getName());
 
         response.sendRedirect(request.getContextPath() + "/admin/RestaurantListServlet");
     }

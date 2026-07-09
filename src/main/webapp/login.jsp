@@ -61,7 +61,7 @@
                 <h2 class="auth-title" onclick="titleClick()" title="连续点击标题 3 次切换管理员登录">
                     <span class="gradient-text">登录账号</span>
                 </h2>
-                <p class="auth-lead">继续探索山海大学食堂的真实评价。</p>
+                <p class="auth-lead">继续探索校园食堂的真实评价。</p>
             </div>
 
             <%-- Server-side message --%>
