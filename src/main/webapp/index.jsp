@@ -55,6 +55,7 @@
                         <div class="user-menu-panel">
                             <a href="TasteProfileServlet">🎯 味蕾档案</a>
                             <a href="WishListServlet">✅ 想吃清单</a>
+                            <a href="AnnouncementServlet">📢 站内公告</a>
                             <a href="AccountServlet">⚙️ 账户设置</a>
                             <a href="LogoutServlet" class="danger">⏻ 退出登录</a>
                         </div>
@@ -72,7 +73,7 @@
                 <% for (int i = 0; i < announcements.size(); i++) {
                     Announcement a = announcements.get(i);
                 %>
-                <a href="TasteCompassServlet" class="announce-ticker-item">
+                <a href="AnnouncementServlet" class="announce-ticker-item">
                     <span class="announce-ticker-dot"></span>
                     <strong><%= com.util.HtmlUtil.escape(a.getTitle()) %></strong>
                     <span class="announce-ticker-sep">—</span>
@@ -82,7 +83,7 @@
                 <% for (int i = 0; i < announcements.size(); i++) {
                     Announcement a = announcements.get(i);
                 %>
-                <a href="TasteCompassServlet" class="announce-ticker-item" aria-hidden="true">
+                <a href="AnnouncementServlet" class="announce-ticker-item" aria-hidden="true">
                     <span class="announce-ticker-dot"></span>
                     <strong><%= com.util.HtmlUtil.escape(a.getTitle()) %></strong>
                     <span class="announce-ticker-sep">—</span>
@@ -108,7 +109,7 @@
                     </div>
                 <% } else { %>
                     <span class="hero-kicker">欢迎回来</span>
-                    <h1 class="hero-title">你好，<span class="gradient-text"><%= com.util.HtmlUtil.escape(displayName) %></span></h1>
+                    <h1 class="hero-title">你好，<span class="username-color"><%= com.util.HtmlUtil.escape(displayName) %></span></h1>
                     <p class="hero-subtitle">今天想吃点什么？看看饭点推荐，或直接去寻味雷达找灵感。</p>
                     <div class="hero-cta-group">
                         <a href="AllEvaluateServlet" class="btn btn-primary btn-lg">查看评价</a>
@@ -149,13 +150,14 @@
             </div>
         </section>
 
-        <!-- 餐厅档案 -->
+        <!-- 最火档口 -->
         <section class="home-restaurant-section">
             <div class="section-head-inline">
                 <div>
-                    <h2>食堂导览</h2>
-                    <p>位置、营业时间、标签与简介，一站式了解校园餐厅</p>
+                    <h2>最火档口</h2>
+                    <p>大家最爱去的前 3 家</p>
                 </div>
+                <a href="AllEvaluateServlet" class="btn btn-outline btn-sm">查看全部 →</a>
             </div>
             <div class="restaurant-card-grid">
                 <c:forEach items="${restaurantList}" var="r">
@@ -194,44 +196,26 @@
         </section>
 
         <section class="home-features">
-            <div class="feature-grid">
-                <a href="AllEvaluateServlet" class="feature-card feature-card-lg">
-                    <div class="feature-card-inner">
-                        <div class="feature-icon icon-blue">📋</div>
-                        <div class="feature-card-text">
-                            <h3>全站评价</h3>
-                            <p>浏览所有人的美食点评</p>
-                        </div>
-                    </div>
+            <div class="feature-grid-v2">
+                <a href="AllEvaluateServlet" class="feature-item-v2">
+                    <span class="feature-item-icon">📋</span>
+                    <span class="feature-item-title">全站评价</span>
+                    <span class="feature-item-desc">浏览所有美食点评</span>
                 </a>
-                <a href="TasteCompassServlet" class="feature-card">
-                    <div class="feature-icon icon-emerald">🧭</div>
-                    <h3>寻味雷达</h3>
+                <a href="TasteCompassServlet" class="feature-item-v2">
+                    <span class="feature-item-icon">🧭</span>
+                    <span class="feature-item-title">寻味雷达</span>
+                    <span class="feature-item-desc">智能推荐好味道</span>
                 </a>
-                <a href="TrendBoardServlet" class="feature-card">
-                    <div class="feature-icon icon-amber">📊</div>
-                    <h3>美食热榜</h3>
+                <a href="TrendBoardServlet" class="feature-item-v2">
+                    <span class="feature-item-icon">🔥</span>
+                    <span class="feature-item-title">美食热榜</span>
+                    <span class="feature-item-desc">大家都在吃什么</span>
                 </a>
-                <a href="AddEvaluateServlet" class="feature-card feature-card-lg">
-                    <div class="feature-card-inner">
-                        <div class="feature-icon icon-purple">✨</div>
-                        <div class="feature-card-text">
-                            <h3>发布评价</h3>
-                            <p>记录你的美食发现</p>
-                        </div>
-                    </div>
-                </a>
-                <a href="MyEvaluateServlet" class="feature-card">
-                    <div class="feature-icon icon-amber">📁</div>
-                    <h3>我的评价</h3>
-                </a>
-                <a href="TasteProfileServlet" class="feature-card">
-                    <div class="feature-icon icon-blue">🎯</div>
-                    <h3>味蕾档案</h3>
-                </a>
-                <a href="WishListServlet" class="feature-card">
-                    <div class="feature-icon icon-emerald">✅</div>
-                    <h3>想吃清单</h3>
+                <a href="AddEvaluateServlet" class="feature-item-v2">
+                    <span class="feature-item-icon">✍️</span>
+                    <span class="feature-item-title">发布评价</span>
+                    <span class="feature-item-desc">记录美食发现</span>
                 </a>
             </div>
         </section>

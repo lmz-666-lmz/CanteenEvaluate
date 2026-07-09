@@ -1,19 +1,20 @@
 /* ============================================================
-   山海寻味录 v3.5 — Feature Pages
-   Taste Compass / Trend Board / Taste Profile / Wish List
-============================================================ */
+   功能页通用样式 — 热榜、寻味雷达、味蕾档案、想吃清单
+   v2.0 — 去AI味，简洁实用，带动态效果
+   ============================================================ */
 
 .feature-shell {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 28px 24px 64px;
 }
 
+/* ----- Hero area ----- */
 .feature-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
+  gap: 16px;
   align-items: stretch;
   margin-bottom: 20px;
 }
@@ -21,539 +22,337 @@
 .feature-panel,
 .signal-panel,
 .metric-card,
-.rank-card,
-.profile-card,
-.wish-card {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  box-shadow: var(--shadow-sm);
+.rank-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
 }
 
 .feature-panel {
   padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 18px;
 }
 
 .feature-kicker {
-  display: inline-flex;
+  display: inline-block;
   width: fit-content;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #ECFDF5;
-  color: #047857;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f3f4f6;
+  letter-spacing: 0.01em;
 }
 
 .feature-title {
-  font-size: 34px;
-  line-height: 1.18;
-  font-weight: 800;
-  letter-spacing: 0;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 700;
   margin: 0;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
 }
 
 .feature-subtitle {
-  color: var(--color-text-secondary);
-  font-size: 15px;
-  line-height: 1.8;
-  max-width: 680px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 640px;
+  margin: 0;
 }
 
 .feature-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.segmented {
-  display: flex;
-  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
 
-.segment-label {
-  color: var(--color-text-tertiary);
-  font-size: 12px;
-  font-weight: 700;
-  margin-right: 2px;
-}
-
-.segment {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  background: #fff;
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.segment:hover {
-  border-color: var(--brand-300);
-  background: var(--brand-50);
-  color: var(--brand-700);
-}
-
-.segment.active {
-  color: #fff;
-  border-color: var(--brand-600);
-  background: var(--brand-600);
-  box-shadow: 0 6px 18px rgba(79,70,229,0.22);
-}
-
+/* ----- Signal panel (stats sidebar) ----- */
 .signal-panel {
-  padding: 22px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  gap: 10px;
 }
+.signal-title { font-size: 13px; font-weight: 600; color: #6b7280; }
+.signal-number { font-size: 38px; line-height: 1; font-weight: 700; color: #1a1a1a; }
+.signal-muted { color: #9ca3af; font-size: 13px; line-height: 1.6; margin: 0; }
 
-.signal-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.signal-number {
-  font-size: 40px;
-  line-height: 1;
-  font-weight: 800;
-  color: #0F766E;
-}
-
-.signal-muted {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
+/* ----- Metric grid ----- */
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
-
 .metric-card {
-  padding: 18px;
+  padding: 18px 16px;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-
-.metric-label {
-  color: var(--color-text-tertiary);
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 6px;
+.metric-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
 }
+.metric-label { color: #9ca3af; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.metric-value { color: #1a1a1a; font-size: 26px; line-height: 1.1; font-weight: 700; }
+.metric-note { color: #9ca3af; margin-top: 6px; font-size: 11px; }
 
-.metric-value {
-  color: var(--color-text);
-  font-size: 28px;
-  line-height: 1.1;
-  font-weight: 800;
-}
-
-.metric-note {
-  color: var(--color-text-secondary);
-  margin-top: 8px;
-  font-size: 12px;
-}
-
+/* ----- Section head ----- */
 .section-head {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: flex-end;
-  margin: 26px 0 14px;
+  margin: 28px 0 16px;
 }
+.section-head h2 { font-size: 20px; font-weight: 700; margin: 0; color: #1a1a1a; }
+.section-head p { color: #9ca3af; font-size: 13px; }
 
-.section-head h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.section-head p {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-}
-
-.recommend-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.recommend-card {
-  background: #fff;
-  border: 1px solid var(--color-border-light);
-  border-radius: 18px;
-  padding: 18px;
-  min-height: 250px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  box-shadow: var(--shadow-xs);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-}
-
-.recommend-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--brand-200);
-}
-
-.recommend-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.dish-title {
-  color: var(--color-text);
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.restaurant-chip {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #F0FDFA;
-  color: #0F766E;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.heat-badge {
-  flex-shrink: 0;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: #FFF7ED;
-  color: #C2410C;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.score-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.score-pill {
-  padding: 8px;
-  border-radius: 12px;
-  background: var(--gray-50);
-  text-align: center;
-}
-
-.score-pill span {
-  display: block;
-  color: var(--color-text-tertiary);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.score-pill strong {
-  color: var(--color-text);
-  font-size: 16px;
-}
-
-.quote-text {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  line-height: 1.75;
-  flex: 1;
-}
-
-.reason-line {
-  color: var(--brand-700);
-  background: var(--brand-50);
-  border-radius: 12px;
-  padding: 9px 10px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
+/* ----- Rank layout (热榜 / 味蕾档案) ----- */
 .rank-layout {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
-
-.rank-card {
-  padding: 18px;
-}
-
-.rank-card h3 {
-  font-size: 16px;
-  font-weight: 800;
-  margin-bottom: 14px;
-}
-
-.rank-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.rank-card { padding: 20px; }
+.rank-card h3 { font-size: 15px; font-weight: 700; margin: 0 0 14px; color: #1a1a1a; }
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
 
 .rank-item {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   padding: 12px;
-  border-radius: 14px;
-  background: var(--gray-50);
+  border-radius: 10px;
+  background: #f9fafb;
   border: 1px solid transparent;
+  transition: all 0.2s;
+  animation: fadeSlideIn 0.4s ease forwards;
+  opacity: 0;
 }
-
-.rank-item:hover {
-  background: #fff;
-  border-color: var(--color-border);
-}
+.rank-item:nth-child(1) { animation-delay: 0s; }
+.rank-item:nth-child(2) { animation-delay: 0.06s; }
+.rank-item:nth-child(3) { animation-delay: 0.12s; }
+.rank-item:nth-child(4) { animation-delay: 0.18s; }
+.rank-item:nth-child(5) { animation-delay: 0.24s; }
+.rank-item:hover { background: #fff; border-color: #d1d5db; transform: translateX(3px); }
 
 .rank-num {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #DBEAFE;
-  color: #1D4ED8;
-  font-weight: 800;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-weight: 700;
   font-size: 13px;
 }
 
-.rank-item:nth-child(1) .rank-num { background: #FEF3C7; color: #B45309; }
-.rank-item:nth-child(2) .rank-num { background: #E0E7FF; color: #4338CA; }
-.rank-item:nth-child(3) .rank-num { background: #DCFCE7; color: #15803D; }
+/* Top 3 visual */
+.rank-item:nth-child(1) { background: #fffbeb; border-color: #fde68a; }
+.rank-item:nth-child(2) { background: #f8fafc; border-color: #e2e8f0; }
+.rank-item:nth-child(3) { background: #fff7ed; border-color: #fed7aa; }
+.rank-item:nth-child(1) .rank-num { background: #f59e0b; color: #fff; }
+.rank-item:nth-child(2) .rank-num { background: #94a3b8; color: #fff; }
+.rank-item:nth-child(3) .rank-num { background: #d97706; color: #fff; }
 
-.rank-main {
-  min-width: 0;
-}
+.rank-main { min-width: 0; }
+.rank-title { color: #1a1a1a; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.rank-sub { color: #9ca3af; font-size: 12px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 
-.rank-title {
-  color: var(--color-text);
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.rank-score { text-align: right; font-size: 13px; font-weight: 700; flex-shrink: 0; color: #1a1a1a; }
+.rank-score strong { font-size: 18px; display: block; color: #1a1a1a; }
+.rank-score small { display: block; color: #9ca3af; font-size: 11px; font-weight: 500; }
 
-.rank-sub {
-  color: var(--color-text-tertiary);
-  font-size: 12px;
-  margin-top: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rank-score {
-  text-align: right;
-  color: #B45309;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.rank-score small {
-  display: block;
-  color: var(--color-text-tertiary);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.profile-grid {
+/* ----- Recommend grid (寻味雷达) ----- */
+.recommend-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
-
-.profile-card {
-  padding: 22px;
-}
-
-.persona-name {
-  font-size: 30px;
-  font-weight: 800;
-  margin: 8px 0;
-}
-
-.badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.taste-badge {
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: #F0F9FF;
-  color: #0369A1;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.progress-stack {
+.recommend-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeSlideIn 0.45s ease forwards;
+  opacity: 0;
+}
+.recommend-card:nth-child(1) { animation-delay: 0s; }
+.recommend-card:nth-child(2) { animation-delay: 0.08s; }
+.recommend-card:nth-child(3) { animation-delay: 0.16s; }
+.recommend-card:nth-child(4) { animation-delay: 0.24s; }
+.recommend-card:nth-child(5) { animation-delay: 0.32s; }
+.recommend-card:nth-child(6) { animation-delay: 0.40s; }
+.recommend-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transform: translateY(-3px);
 }
 
-.progress-line {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) 42px;
-  gap: 10px;
-  align-items: center;
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.progress-track {
-  height: 10px;
-  border-radius: 999px;
-  background: var(--gray-100);
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #14B8A6, #6366F1);
-}
-
-.wish-layout {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 18px;
-  align-items: flex-start;
-}
-
-.wish-card {
-  padding: 20px;
-}
-
-.wish-card h3 {
-  font-size: 17px;
-  font-weight: 800;
-  margin-bottom: 16px;
-}
-
-.wish-list {
-  display: grid;
-  gap: 12px;
-}
-
-.wish-item {
-  background: #fff;
-  border: 1px solid var(--color-border-light);
-  border-radius: 16px;
-  padding: 15px;
-  display: grid;
-  gap: 10px;
-}
-
-.wish-item.done {
-  background: #F8FAFC;
-  opacity: 0.84;
-}
-
-.wish-title {
-  font-weight: 800;
-  color: var(--color-text);
-}
-
-.wish-meta {
-  color: var(--color-text-tertiary);
+.recommend-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.dish-title { color: #1a1a1a; font-size: 17px; font-weight: 700; line-height: 1.35; }
+.restaurant-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #059669;
   font-size: 12px;
+  font-weight: 600;
 }
-
-.inline-form {
-  display: inline-flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.heat-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 600;
 }
-
-.setup-box {
-  background: #FFF7ED;
-  border: 1px solid #FED7AA;
-  color: #9A3412;
-  border-radius: 16px;
-  padding: 18px;
-  line-height: 1.8;
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
-
-.empty-inline {
-  color: var(--color-text-tertiary);
-  background: var(--gray-50);
-  border: 1px dashed var(--color-border);
-  border-radius: 16px;
-  padding: 18px;
+.score-pill {
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: #f9fafb;
   text-align: center;
 }
-
-@media (max-width: 980px) {
-  .feature-hero,
-  .profile-grid,
-  .wish-layout {
-    grid-template-columns: 1fr;
-  }
-  .metric-grid,
-  .recommend-grid,
-  .rank-layout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.score-pill span { display: block; color: #9ca3af; font-size: 10px; font-weight: 600; }
+.score-pill strong { color: #1a1a1a; font-size: 15px; }
+.quote-text { color: #6b7280; font-size: 13px; line-height: 1.7; flex: 1; }
+.reason-line {
+  color: #4f46e5;
+  background: #eef2ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
+/* ----- Segmented control (寻味雷达 mood/budget) ----- */
+.segmented { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.segment-label { color: #6b7280; font-size: 12px; font-weight: 600; margin-right: 4px; }
+.segment {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 34px; padding: 6px 14px;
+  border-radius: 8px; border: 1px solid #d1d5db;
+  background: #fff; color: #6b7280; font-size: 13px; font-weight: 600;
+  transition: all 0.15s; cursor: pointer; text-decoration: none;
+}
+.segment:hover { border-color: #9ca3af; color: #374151; background: #f9fafb; }
+.segment.active { color: #fff; border-color: #4f46e5; background: #4f46e5; }
+
+/* ----- Profile grid (味蕾档案) ----- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 16px;
+}
+.profile-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+  padding: 24px;
+  transition: box-shadow 0.2s;
+}
+.profile-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+.persona-name { font-size: 26px; font-weight: 700; margin: 8px 0; color: #1a1a1a; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.taste-badge {
+  padding: 5px 12px; border-radius: 8px;
+  background: #f0f9ff; color: #0369a1;
+  font-size: 12px; font-weight: 600;
+  transition: transform 0.15s;
+}
+.taste-badge:hover { transform: scale(1.05); }
+
+.progress-stack { display: flex; flex-direction: column; gap: 12px; }
+.progress-line {
+  display: grid; grid-template-columns: 50px minmax(0, 1fr) 32px;
+  gap: 10px; align-items: center;
+  color: #6b7280; font-size: 13px; font-weight: 600;
+}
+.progress-track { height: 8px; border-radius: 8px; background: #f3f4f6; overflow: hidden; }
+.progress-bar {
+  height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.progress-line:nth-child(1) .progress-bar { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.progress-line:nth-child(2) .progress-bar { background: linear-gradient(90deg, #10b981, #34d399); }
+.progress-line:nth-child(3) .progress-bar { background: linear-gradient(90deg, #6366f1, #818cf8); }
+
+/* ----- Wish layout (想吃清单) ----- */
+.wish-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+}
+.wish-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+  padding: 20px;
+}
+.wish-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: #1a1a1a; }
+.wish-list { display: grid; gap: 10px; }
+.wish-item {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+  padding: 16px; display: grid; gap: 8px;
+  transition: all 0.2s;
+  animation: fadeSlideIn 0.4s ease forwards;
+  opacity: 0;
+}
+.wish-item:nth-child(1) { animation-delay: 0s; }
+.wish-item:nth-child(2) { animation-delay: 0.06s; }
+.wish-item:nth-child(3) { animation-delay: 0.12s; }
+.wish-item:nth-child(4) { animation-delay: 0.18s; }
+.wish-item:nth-child(5) { animation-delay: 0.24s; }
+.wish-item:hover { border-color: #d1d5db; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.wish-item.done { background: #f9fafb; opacity: 0.7; }
+.wish-item.done .wish-title { text-decoration: line-through; color: #9ca3af; }
+.wish-title { font-weight: 600; color: #1a1a1a; font-size: 14px; }
+.wish-meta { color: #9ca3af; font-size: 12px; }
+
+.inline-form { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.setup-box {
+  background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
+  border-radius: 10px; padding: 16px; line-height: 1.7; font-size: 13px;
+}
+.empty-inline {
+  color: #9ca3af; background: #f9fafb; border: 1px dashed #d1d5db;
+  border-radius: 10px; padding: 20px; text-align: center; font-size: 13px;
+}
+
+/* ----- Animations ----- */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 980px) {
+  .feature-hero, .profile-grid, .wish-layout { grid-template-columns: 1fr; }
+  .metric-grid, .recommend-grid, .rank-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 680px) {
-  .feature-shell {
-    padding: 18px 14px 48px;
-  }
-  .feature-panel,
-  .signal-panel,
-  .metric-card,
-  .rank-card,
-  .profile-card,
-  .wish-card {
-    border-radius: 16px;
-  }
-  .feature-title {
-    font-size: 26px;
-  }
-  .metric-grid,
-  .recommend-grid,
-  .rank-layout {
-    grid-template-columns: 1fr;
-  }
-  .score-row {
-    grid-template-columns: 1fr;
-  }
-  .rank-item {
-    grid-template-columns: 34px minmax(0, 1fr);
-  }
-  .rank-score {
-    grid-column: 2;
-    text-align: left;
-  }
+  .feature-shell { padding: 16px 12px 48px; }
+  .feature-panel, .signal-panel, .metric-card, .rank-card, .profile-card, .wish-card { border-radius: 10px; }
+  .feature-title { font-size: 22px; }
+  .metric-grid, .recommend-grid, .rank-layout { grid-template-columns: 1fr; }
+  .score-row { grid-template-columns: 1fr; }
+  .rank-item { grid-template-columns: 30px minmax(0, 1fr); }
+  .rank-score { grid-column: 2; text-align: left; }
 }

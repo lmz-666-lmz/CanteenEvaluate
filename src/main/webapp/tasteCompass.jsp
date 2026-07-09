@@ -57,6 +57,7 @@
                     <div class="user-menu-panel">
                         <a href="${pageContext.request.contextPath}/TasteProfileServlet">🎯 味蕾档案</a>
                         <a href="${pageContext.request.contextPath}/WishListServlet">✅ 想吃清单</a>
+                        <a href="${pageContext.request.contextPath}/AnnouncementServlet">📢 站内公告</a>
                         <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
                         <a href="${pageContext.request.contextPath}/LogoutServlet" class="danger">⏻ 退出登录</a>
                     </div>
@@ -106,10 +107,10 @@
     </section>
 
     <section class="metric-grid">
-        <div class="metric-card"><div class="metric-label">评价数</div><div class="metric-value"><%= campusStats.getEvaluationCount() %></div><div class="metric-note">来自真实同学反馈</div></div>
-        <div class="metric-card"><div class="metric-label">菜品池</div><div class="metric-value"><%= campusStats.getDishCount() %></div><div class="metric-note">可持续扩展</div></div>
-        <div class="metric-card"><div class="metric-label">点赞数</div><div class="metric-value"><%= campusStats.getLikeCount() %></div><div class="metric-note">同学认可信号</div></div>
-        <div class="metric-card"><div class="metric-label">当前榜首</div><div class="metric-value" style="font-size:20px;"><%= campusStats.getTopDish() != null ? campusStats.getTopDish() : "待生成" %></div><div class="metric-note">随评价实时变化</div></div>
+        <div class="metric-card"><div class="metric-label">评价数</div><div class="metric-value"><%= campusStats.getEvaluationCount() %></div><div class="metric-note">条真实评价</div></div>
+        <div class="metric-card"><div class="metric-label">菜品池</div><div class="metric-value"><%= campusStats.getDishCount() %></div><div class="metric-note">个可选菜品</div></div>
+        <div class="metric-card"><div class="metric-label">点赞数</div><div class="metric-value"><%= campusStats.getLikeCount() %></div><div class="metric-note">次同学认可</div></div>
+        <div class="metric-card"><div class="metric-label">当前榜首</div><div class="metric-value" style="font-size:20px;"><%= campusStats.getTopDish() != null ? campusStats.getTopDish() : "待生成" %></div><div class="metric-note">最受欢迎菜品</div></div>
     </section>
 
     <div class="section-head">

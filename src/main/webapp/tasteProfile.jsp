@@ -45,7 +45,8 @@
                 <div class="user-menu-panel">
                     <a href="${pageContext.request.contextPath}/TasteProfileServlet">🎯 味蕾档案</a>
                     <a href="${pageContext.request.contextPath}/WishListServlet">✅ 想吃清单</a>
-                    <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
+                    <a href="${pageContext.request.contextPath}/AnnouncementServlet">📢 站内公告</a>
+                        <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
                     <a href="${pageContext.request.contextPath}/LogoutServlet" class="danger">⏻ 退出登录</a>
                 </div>
             </details>
@@ -56,7 +57,7 @@
 <main class="feature-shell">
     <section class="profile-grid">
         <div class="profile-card">
-            <span class="feature-kicker">Personal Taste OS</span>
+            <span class="feature-kicker">你的校园美食足迹</span>
             <div class="persona-name"><%= profile.getPersonaName() != null ? profile.getPersonaName() : "味蕾档案" %></div>
             <p class="feature-subtitle"><%= profile.getPersonaDesc() != null ? profile.getPersonaDesc() : "继续发布评价，系统会生成更准确的校园口味画像。" %></p>
             <div class="badge-row">

@@ -22,6 +22,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>餐厅管理 · 山海寻味录</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/admin/css/admin-modern.css">
+    <style>
+        /* inline overrides for restaurant management v1.1 */
+        .rest-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .rest-form-grid .form-group {
+            margin-bottom: 0;
+        }
+        .rest-form-full {
+            grid-column: 1 / -1;
+        }
+        .color-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tag-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #EEF2FF;
+            color: #4338CA;
+            margin: 1px 2px;
+            white-space: nowrap;
+        }
+        .rest-table { min-width: 900px; }
+        .rest-table th, .rest-table td { white-space: nowrap; }
+        .rest-table td.desc-cell { max-width: 180px; white-space: normal; font-size: 12px; color: #64748B; }
+        .status-open  { color: #059669; font-weight: 700; }
+        .status-closed { color: #94A3B8; font-weight: 700; }
+        .form-inline-rest {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .form-inline-rest .form-group {
+            flex: 1;
+            min-width: 160px;
+            margin-bottom: 0;
+        }
+        @media (max-width: 768px) {
+            .rest-form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-inline-rest {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="admin-layout">
@@ -32,13 +95,13 @@
         </div>
         <nav class="sidebar-nav">
             <div class="sidebar-nav-label">主菜单</div>
-            <a href="<%= request.getContextPath() %>/admin/DashboardStatsServlet" data-page="DashboardStats"><span class="nav-icon">🏠</span> 控制台</a>
-            <a href="<%= request.getContextPath() %>/admin/UserListServlet" data-page="UserList"><span class="nav-icon">👥</span> 用户管理</a>
-            <a href="<%= request.getContextPath() %>/admin/RestaurantListServlet" class="active" data-page="RestaurantList"><span class="nav-icon">🍴</span> 餐厅管理</a>
-            <a href="${pageContext.request.contextPath}/admin/EvaluationManageServlet" data-page="EvaluationManage"><span class="nav-icon">💬</span> 内容审核</a>
-            <a href="${pageContext.request.contextPath}/admin/AnnouncementManageServlet" data-page="AnnouncementManage"><span class="nav-icon">📢</span> 公告管理</a>
-            <a href="${pageContext.request.contextPath}/admin/FoodInsightServlet" data-page="FoodInsight"><span class="nav-icon">📊</span> 数据洞察</a>
-            <a href="${pageContext.request.contextPath}/admin/LogManageServlet" data-page="LogManage"><span class="nav-icon">📜</span> 系统日志</a>
+            <a href="<%= request.getContextPath() %>/admin/DashboardStatsServlet"><span class="nav-icon">🏠</span> 控制台</a>
+            <a href="<%= request.getContextPath() %>/admin/UserListServlet"><span class="nav-icon">👥</span> 用户管理</a>
+            <a href="<%= request.getContextPath() %>/admin/RestaurantListServlet" class="active"><span class="nav-icon">🍴</span> 餐厅管理</a>
+            <a href="${pageContext.request.contextPath}/admin/EvaluationManageServlet"><span class="nav-icon">💬</span> 内容审核</a>
+            <a href="${pageContext.request.contextPath}/admin/AnnouncementManageServlet"><span class="nav-icon">📢</span> 公告管理</a>
+            <a href="${pageContext.request.contextPath}/admin/FoodInsightServlet"><span class="nav-icon">📊</span> 数据洞察</a>
+            <a href="${pageContext.request.contextPath}/admin/LogManageServlet"><span class="nav-icon">📜</span> 系统日志</a>
         </nav>
         <div class="sidebar-footer">
             <%
@@ -79,14 +142,50 @@
                 <div class="alert alert-success">✅ 餐厅添加成功！</div>
             <% } %>
 
-            <!-- Add Restaurant -->
+            <!-- Add Restaurant Card -->
             <div class="card" style="margin-bottom:var(--space-6);">
                 <div class="card-header"><h3>➕ 新增餐厅</h3></div>
                 <div class="card-body">
                     <form action="<%= request.getContextPath() %>/admin/RestaurantAddServlet" method="post">
-                        <div class="form-inline">
-                            <div class="form-group"><label class="form-label">餐厅名称</label><input type="text" name="name" class="form-control" required placeholder="请输入新加盟餐厅或档口的名称"></div>
-                            <button type="submit" class="btn btn-primary" style="height:42px;">添加餐厅</button>
+                        <div class="rest-form-grid">
+                            <div class="form-group">
+                                <label class="form-label">餐厅名称 <span class="required">*</span></label>
+                                <input type="text" name="name" class="form-control" required placeholder="例如：北门食堂">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">位置</label>
+                                <input type="text" name="location" class="form-control" placeholder="例如：校园北侧 · 生活区入口">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">营业时间</label>
+                                <input type="text" name="openTime" class="form-control" placeholder="例如：06:30-21:00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">标签</label>
+                                <input type="text" name="tags" class="form-control" placeholder="英文逗号分隔，例如：早餐,性价比,家常">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">人均价格 (¥)</label>
+                                <input type="number" name="avgCost" class="form-control" placeholder="15.00" step="0.01" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">营业状态</label>
+                                <select name="status" class="form-control">
+                                    <option value="1">营业中</option>
+                                    <option value="0">暂停营业</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">主题色</label>
+                                <input type="text" name="coverColor" class="form-control" placeholder="#7C3AED">
+                            </div>
+                            <div class="rest-form-full">
+                                <label class="form-label">简介</label>
+                                <textarea name="description" class="form-control" rows="2" placeholder="餐厅简介，不超过500字"></textarea>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px; text-align:right;">
+                            <button type="submit" class="btn btn-primary">添加餐厅</button>
                         </div>
                     </form>
                 </div>
@@ -95,7 +194,7 @@
             <!-- Search Bar -->
             <div class="search-bar">
                 <form action="<%= request.getContextPath() %>/admin/RestaurantListServlet" method="get" class="search-form">
-                    <input type="text" name="keyword" value="<%= keyword %>" placeholder="搜索餐厅名称..." class="search-input">
+                    <input type="text" name="keyword" value="<%= keyword %>" placeholder="搜索餐厅名称、位置或标签..." class="search-input">
                     <button type="submit" class="btn btn-primary btn-sm">🔍 搜索</button>
                     <% if (!keyword.isEmpty()) { %>
                     <a href="<%= request.getContextPath() %>/admin/RestaurantListServlet" class="btn btn-outline btn-sm">✕ 清除</a>
@@ -103,26 +202,70 @@
                 </form>
             </div>
 
+            <!-- Restaurant Table -->
             <div class="card">
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>餐厅ID</th><th>餐厅名称</th><th style="text-align:right;">操作</th></tr></thead>
+                <div class="table-scroll">
+                    <table class="rest-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>位置</th>
+                                <th>营业时间</th>
+                                <th>标签</th>
+                                <th>人均</th>
+                                <th>状态</th>
+                                <th>简介</th>
+                                <th style="text-align:right;">操作</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <% if (restaurantList != null && !restaurantList.isEmpty()) {
                                 for (Restaurant rest : restaurantList) { %>
                             <tr>
                                 <td><span class="cell-id">#<%= rest.getId() %></span></td>
                                 <td style="font-weight:600;"><%= HtmlUtil.escape(rest.getName()) %></td>
+                                <td><%= rest.getLocation() != null ? HtmlUtil.escape(rest.getLocation()) : "<span style='color:#94A3B8'>—</span>" %></td>
+                                <td><%= rest.getOpenTime() != null ? HtmlUtil.escape(rest.getOpenTime()) : "<span style='color:#94A3B8'>—</span>" %></td>
+                                <td>
+                                    <% String[] tagArray = rest.getTagArray();
+                                       if (tagArray.length > 0) {
+                                           for (String tag : tagArray) { %>
+                                               <span class="tag-badge"><%= HtmlUtil.escape(tag) %></span>
+                                    <%     }
+                                       } else { %>
+                                               <span style="color:#94A3B8">—</span>
+                                    <% } %>
+                                </td>
+                                <td><%= rest.getAvgCost() != null ? "¥" + rest.getAvgCost().stripTrailingZeros().toPlainString() : "<span style='color:#94A3B8'>¥15</span>" %></td>
+                                <td>
+                                    <% if (rest.getStatus() == 1) { %>
+                                        <span class="status-open">● 营业中</span>
+                                    <% } else { %>
+                                        <span class="status-closed">● 暂停营业</span>
+                                    <% } %>
+                                </td>
+                                <td class="desc-cell"><%= rest.getDescription() != null ? HtmlUtil.escape(rest.getDescription()) : "<span style='color:#94A3B8'>—</span>" %></td>
                                 <td style="text-align:right;">
                                     <div class="btn-group" style="justify-content:flex-end;">
-                                        <button class="btn btn-outline btn-sm" onclick="openEdit('<%= rest.getId() %>', '<%= HtmlUtil.escape(rest.getName()).replace("'","\\'") %>')">✎ 修改</button>
+                                        <button class="btn btn-outline btn-sm" onclick="openEdit(
+                                            '<%= rest.getId() %>',
+                                            '<%= HtmlUtil.escape(rest.getName()).replace("'","\\'") %>',
+                                            '<%= rest.getLocation() != null ? HtmlUtil.escape(rest.getLocation()).replace("'","\\'") : "" %>',
+                                            '<%= rest.getOpenTime() != null ? HtmlUtil.escape(rest.getOpenTime()).replace("'","\\'") : "" %>',
+                                            '<%= rest.getTags() != null ? HtmlUtil.escape(rest.getTags()).replace("'","\\'") : "" %>',
+                                            '<%= rest.getDescription() != null ? HtmlUtil.escape(rest.getDescription()).replace("'","\\'").replace("\n","\\n") : "" %>',
+                                            '<%= rest.getAvgCost() != null ? rest.getAvgCost().stripTrailingZeros().toPlainString() : "15.00" %>',
+                                            '<%= rest.getStatus() %>',
+                                            '<%= rest.getCoverColor() != null ? HtmlUtil.escape(rest.getCoverColor()) : "#7C3AED" %>'
+                                        )">✎ 编辑</button>
                                         <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= request.getContextPath() %>/admin/RestaurantDeleteServlet?id=<%= rest.getId() %>', '删除该餐厅将同步清除其下所有评价数据，此操作不可恢复。')">✕ 删除</button>
                                     </div>
                                 </td>
                             </tr>
                             <%  }
                             } else { %>
-                            <tr><td colspan="3"><div class="empty-state"><div class="empty-icon">🍴</div><p>暂无入驻餐厅，请在上面添加</p></div></td></tr>
+                            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🍴</div><p>暂无入驻餐厅，请在上面添加</p></div></td></tr>
                             <% } %>
                         </tbody>
                     </table>
@@ -157,11 +300,52 @@
 <!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
     <div class="modal">
-        <div class="modal-header"><h3>修改餐厅名称</h3><button class="modal-close" onclick="AdminModal.close('editModal')">×</button></div>
+        <div class="modal-header"><h3>编辑餐厅信息</h3><button class="modal-close" onclick="AdminModal.close('editModal')">×</button></div>
         <form action="<%= request.getContextPath() %>/admin/RestaurantUpdateServlet" method="post">
             <input type="hidden" name="id" id="editId">
-            <div class="modal-body"><div class="form-group"><label class="form-label">餐厅名称</label><input type="text" name="name" id="editName" class="form-control" required></div></div>
-            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="AdminModal.close('editModal')">取消</button><button type="submit" class="btn btn-primary">保存修改</button></div>
+            <div class="modal-body">
+                <div class="rest-form-grid">
+                    <div class="form-group">
+                        <label class="form-label">餐厅名称 <span class="required">*</span></label>
+                        <input type="text" name="name" id="editName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">位置</label>
+                        <input type="text" name="location" id="editLocation" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">营业时间</label>
+                        <input type="text" name="openTime" id="editOpenTime" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">标签</label>
+                        <input type="text" name="tags" id="editTags" class="form-control" placeholder="英文逗号分隔">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">人均价格 (¥)</label>
+                        <input type="number" name="avgCost" id="editAvgCost" class="form-control" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">营业状态</label>
+                        <select name="status" id="editStatus" class="form-control">
+                            <option value="1">营业中</option>
+                            <option value="0">暂停营业</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主题色</label>
+                        <input type="text" name="coverColor" id="editCoverColor" class="form-control">
+                    </div>
+                    <div class="rest-form-full">
+                        <label class="form-label">简介</label>
+                        <textarea name="description" id="editDescription" class="form-control" rows="3" placeholder="餐厅简介"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="AdminModal.close('editModal')">取消</button>
+                <button type="submit" class="btn btn-primary">保存修改</button>
+            </div>
         </form>
     </div>
 </div>
@@ -172,7 +356,18 @@
     function changePageSize(newSize) {
         window.location.href = 'RestaurantListServlet?page=1&pageSize=' + newSize + '&keyword=<%= keyword %>';
     }
-    function openEdit(id, name) { document.getElementById('editId').value = id; document.getElementById('editName').value = name; AdminModal.open('editModal'); }
+    function openEdit(id, name, location, openTime, tags, description, avgCost, status, coverColor) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editLocation').value = location || '';
+        document.getElementById('editOpenTime').value = openTime || '';
+        document.getElementById('editTags').value = tags || '';
+        document.getElementById('editDescription').value = (description || '').replace(/\\n/g, '\n');
+        document.getElementById('editAvgCost').value = avgCost || '15.00';
+        document.getElementById('editStatus').value = status || '1';
+        document.getElementById('editCoverColor').value = coverColor || '#7C3AED';
+        AdminModal.open('editModal');
+    }
     function confirmDelete(url, message) { showConfirm(message, function() { window.location.href = url; }); }
 </script>
 </body>

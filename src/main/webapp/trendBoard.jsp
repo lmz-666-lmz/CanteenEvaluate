@@ -47,6 +47,7 @@
                     <div class="user-menu-panel">
                         <a href="${pageContext.request.contextPath}/TasteProfileServlet">🎯 味蕾档案</a>
                         <a href="${pageContext.request.contextPath}/WishListServlet">✅ 想吃清单</a>
+                        <a href="${pageContext.request.contextPath}/AnnouncementServlet">📢 站内公告</a>
                         <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
                         <a href="${pageContext.request.contextPath}/LogoutServlet" class="danger">⏻ 退出登录</a>
                     </div>

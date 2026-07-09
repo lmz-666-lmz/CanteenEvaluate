@@ -376,6 +376,115 @@ public class EvaluationDAO {
         return list;
     }
 
+    // ==================== v1.1 全站搜索 ====================
+
+    /**
+     * 全站评价搜索（支持关键词、最低评分、排序、分页）
+     * 使用 PreparedStatement 防止 SQL 注入
+     */
+    public List<Evaluation> searchEvaluations(String keyword, double minScore, String sortBy,
+                                               int page, int pageSize, Integer currentUserId) {
+        List<Evaluation> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT e.*, u.nickname AS authorNickname, r.name AS restaurantName ");
+        if (currentUserId != null) {
+            sql.append(", (SELECT COUNT(*) FROM evaluation_likes el WHERE el.eval_id = e.id AND el.user_id = ?) AS liked ");
+        }
+        sql.append("FROM evaluations e ");
+        sql.append("JOIN users u ON e.user_id = u.id ");
+        sql.append("JOIN restaurants r ON e.restaurant_id = r.id ");
+        sql.append("WHERE 1=1 ");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append("AND (e.dish_name LIKE ? OR e.content LIKE ? OR r.name LIKE ?) ");
+        }
+        if (minScore > 0) {
+            sql.append("AND ((e.taste_score + e.price_score + e.service_score) / 3.0) >= ? ");
+        }
+
+        // 排序
+        if ("highest".equals(sortBy)) {
+            sql.append("ORDER BY (e.taste_score + e.price_score + e.service_score) / 3.0 DESC, e.id DESC ");
+        } else if ("most_liked".equals(sortBy)) {
+            sql.append("ORDER BY e.like_count DESC, e.id DESC ");
+        } else {
+            sql.append("ORDER BY e.id DESC ");
+        }
+
+        sql.append("LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (currentUserId != null) {
+                ps.setInt(idx++, currentUserId);
+            }
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+            if (minScore > 0) {
+                ps.setDouble(idx++, minScore);
+            }
+            ps.setInt(idx++, pageSize);
+            ps.setInt(idx++, (page - 1) * pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Evaluation eval = mapEvaluationWithUser(rs);
+                    if (currentUserId != null) {
+                        try {
+                            eval.setLikedByCurrentUser(rs.getInt("liked") > 0);
+                        } catch (SQLException ignored) {}
+                    }
+                    list.add(eval);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * 全站评价搜索计数
+     */
+    public int countSearchEvaluations(String keyword, double minScore) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) FROM evaluations e ");
+        sql.append("JOIN restaurants r ON e.restaurant_id = r.id ");
+        sql.append("WHERE 1=1 ");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append("AND (e.dish_name LIKE ? OR e.content LIKE ? OR r.name LIKE ?) ");
+        }
+        if (minScore > 0) {
+            sql.append("AND ((e.taste_score + e.price_score + e.service_score) / 3.0) >= ? ");
+        }
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+            if (minScore > 0) {
+                ps.setDouble(idx++, minScore);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     // ==================== Helper methods ====================
 
     private Evaluation mapEvaluation(ResultSet rs) throws SQLException {

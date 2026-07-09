@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0-blue?style=flat-square" alt="Version 1.0">
+  <img src="https://img.shields.io/badge/version-1.1-blue?style=flat-square" alt="Version 1.1">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License MIT">
   <img src="https://img.shields.io/badge/Java-1.8-brightgreen?style=flat-square&logo=openjdk" alt="Java 8">
   <img src="https://img.shields.io/badge/Tomcat-8.5-yellow?style=flat-square&logo=apache-tomcat" alt="Tomcat 8.5">
@@ -49,31 +49,35 @@ cd CanteenEvaluate
 
 ### 2. 初始化数据库
 
-数据库初始化文件：**`sql/canteen_db.sql`**
-
-在 MySQL 命令行或 DBeaver 中执行该文件即可：
+**只需执行一个文件：`sql/canteen_db.sql`**。无论是全新安装还是从 v1.0 升级，都用它。
 
 ```bash
-# 方式一：MySQL 命令行
+# MySQL 命令行
 mysql -u root -p < sql/canteen_db.sql
 
-# 方式二：在 DBeaver / Navicat / MySQL Workbench 中
-# 直接打开 sql/canteen_db.sql 并执行
+# 或者在 DBeaver / Navicat / MySQL Workbench 中直接打开 sql/canteen_db.sql 并执行
 ```
+
+脚本做了三件事：
+
+1. **建库** — `CREATE DATABASE IF NOT EXISTS canteen_db`
+2. **建表** — `CREATE TABLE IF NOT EXISTS ...` 所有 7 张表，`restaurants` 表包含 v1.1 全部字段
+3. **幂等迁移** — 通过 `information_schema` 检查字段是否存在，自动补全 v1.0 旧表缺失的 `location` / `open_time` / `tags` / `description` / `avg_cost` / `status` / `cover_color` 列
+4. **种子数据** — `INSERT IGNORE` + `UPDATE` 幂等写入默认管理员和示例餐厅档案
+
+> 💡 **新数据库**：表从零创建，字段完整，迁移步骤自动跳过。**旧数据库**：表已存在跳过建表，迁移步骤自动补全新字段。同一个脚本，安全可重复执行。
 
 执行后会创建 `canteen_db` 数据库及以下 7 张表：
 
 | 表名 | 说明 |
 |------|------|
 | `users` | 用户表（含管理员） |
-| `restaurants` | 餐厅表 |
+| `restaurants` | 餐厅表（v1.1 档案增强：位置 / 营业时间 / 标签 / 简介 / 人均 / 状态 / 主题色） |
 | `evaluations` | 评价表（三维评分 + 点赞） |
 | `announcements` | 公告表 |
 | `wish_items` | 想吃清单表 |
 | `sys_logs` | 系统操作日志表 |
-| `system_config` | 运行时配置表 |
-
-> 脚本中已包含默认管理员账户 `admin` 和示例餐厅数据。
+| `system_config` | 运行时配置表
 
 ### 3. 配置数据库连接
 
@@ -176,8 +180,8 @@ $TOMCAT_HOME/bin/startup.bat   # Windows
 | **Feed** 评价流 | `allEvaluate.jsp` | `AllEvaluateServlet` | 全站评价浏览，支持排序（最新/最热/高分）、餐厅筛选、分页 |
 | **Compass** 寻味雷达 | `tasteCompass.jsp` | `TasteCompassServlet` | 基于心情（想吃暖的/清爽/热门/高分/性价比）与预算（日常/犒劳/赶时间）的智能菜品推荐 |
 | **TrendBoard** 热榜 | `trendBoard.jsp` | `TrendBoardServlet` | 餐厅热度榜、菜品热度榜、创作者榜，含热度分算法 |
-| **Evaluate** 评价 | `addEvaluate.jsp`, `editEvaluate.jsp` | `AddEvaluateServlet`, `EditEvaluateServlet`, `ToEditEvaluateServlet` | 发布/编辑评价，三维评分（口味/价格/服务），AI 洞察评分 |
-| **MyEvaluate** 我的 | `myEvaluate.jsp` | `MyEvaluateServlet`, `DeleteEvaluateServlet`, `LikeEvaluationServlet` | 管理自己的评价，点赞互动 |
+| **Evaluate** 评价 | `addEvaluate.jsp`, `editEvaluate.jsp` | `AddEvaluateServlet`, `EditEvaluateServlet`, `ToEditEvaluateServlet` | 发布/编辑评价，emoji 星级选择器 + 实时综合分预览，三维评分（口味/价格/服务） |
+| **MyEvaluate** 我的 | `myEvaluate.jsp` | `MyEvaluateServlet`, `DeleteEvaluateServlet`, `LikeEvaluationServlet` | 管理评价（三维分展示 + 综合分 badge）、统计面板、快捷入口、点赞互动 |
 | **Profile** 味蕾档案 | `tasteProfile.jsp` | `TasteProfileServlet` | 个人口味画像：人格标签、维度强弱、成就徽章、统计雷达 |
 | **WishList** 想吃清单 | `wishList.jsp` | `WishListServlet`, `WishActionServlet` | 心愿单增删改查，标记已完成 |
 | **Account** 账户 | `account.jsp` | `AccountServlet`, `UpdateProfileServlet` | 个人资料编辑、昵称修改 |
@@ -356,7 +360,7 @@ CanteenEvaluate/
 │       └── css/
 │           └── admin-modern.css       # 后台专属样式
 ├── sql/
-│   └── canteen_db.sql                 # 数据库初始化脚本
+│   └── canteen_db.sql                 # 数据库初始化脚本（新老数据库通用，幂等）
 ├── .gitignore
 └── README.md
 ```
@@ -459,6 +463,7 @@ cp src/main/resources/db.properties.example src/main/resources/db.properties
 
 | 版本 | 日期 | 核心变更 |
 |:---|:---|:---|
+| **V1.1** | 2026-07 | **数据库**：`sql/canteen_db.sql` 内置幂等迁移，新增 `location`/`open_time`/`tags`/`description`/`avg_cost`/`status`/`cover_color` 字段，新老数据库执行同一文件；**首页**：今日饭点推荐卡片 + 最火档口 Top 3 餐厅档案卡（含营业时间/位置/标签/简介），公告跑马灯滚动；**全站评价**：餐厅侧边栏筛选 + 关键词搜索 + 评分过滤，评分星级展示，分页排序；**发布/编辑评价**：emoji 按钮星级选择器 + 实时综合分预览条，餐厅卡片选择器；**我的评价**：统计面板（评价数/餐厅覆盖/获赞/均分），三维分可视化进度条，快捷入口；**账户设置**：侧边栏布局；**登录/注册**：双栏动态数据面板（注册用户/餐厅/评价实时计数动画），管理员入口彩蛋；**全局 UI**：统一 1200px/680px 宽度体系，去玻璃拟态与胶囊圆角，简化配色与阴影，页面间视觉一致 |
 | **V1.0** | 2026-07 | 🍜 正式发布 — 山海寻味录：用户注册登录（验证码 + 游客模式）；全站评价浏览（排序/筛选/分页）；三维评分（口味/价格/服务）发布与编辑；寻味雷达智能推荐引擎（心情 × 预算双维度）；美食热榜（餐厅/菜品/创作者三榜 + 热度算法）；味蕾档案人格画像（6 种标签 + 成就徽章）；想吃清单管理；管理后台（控制台/用户/餐厅/评价/公告/数据洞察/操作日志）；管理员登录彩蛋入口；首页公告跑马灯；数据库初始化脚本 `sql/canteen_db.sql`（7 张表 + 种子数据）；原创 SVG Logo；db.properties.example 配置模板；.gitignore 敏感信息防护 |
 
 ---
@@ -482,5 +487,5 @@ cp src/main/resources/db.properties.example src/main/resources/db.properties
 ---
 
 <p align="center">
-  <sub>Made with ❤️ for Shanhai University students 🍜</sub>
+  <sub>Made with ❤️ for campus food lovers 🍜</sub>
 </p>

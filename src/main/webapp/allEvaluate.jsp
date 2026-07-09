@@ -91,6 +91,7 @@
                     <div class="user-menu-panel">
                         <a href="${pageContext.request.contextPath}/TasteProfileServlet">🎯 味蕾档案</a>
                         <a href="${pageContext.request.contextPath}/WishListServlet">✅ 想吃清单</a>
+                        <a href="${pageContext.request.contextPath}/AnnouncementServlet">📢 站内公告</a>
                         <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
                         <a href="${pageContext.request.contextPath}/LogoutServlet" class="danger">⏻ 退出登录</a>
                     </div>
@@ -170,7 +171,6 @@
         <!-- Empty -->
         <c:if test="${empty evalPageList}">
             <div class="ev3-empty-card">
-                <div class="ev3-empty-icon">🔍</div>
                 <h3>没有找到相关评价</h3>
                 <p><c:choose>
                     <c:when test="${not empty _keyword}">试试换个关键词，或<a href="AllEvaluateServlet?sort=${_sort}${_rparam}&pageSize=${_size}">清除搜索条件</a></c:when>
@@ -183,10 +183,7 @@
         <c:if test="${not empty evalPageList}">
             <div class="ev3-grid">
                 <c:forEach items="${evalPageList}" var="ev" varStatus="st">
-                    <div class="ev3-card ${(_sort eq 'highest' or _sort eq 'most_liked') && _page == 1 && st.index < 3 ? 'hot' : ''}">
-                        <c:if test="${_page == 1 && st.index == 0}"><span class="ev3-medal">🥇</span></c:if>
-                        <c:if test="${_page == 1 && st.index == 1}"><span class="ev3-medal">🥈</span></c:if>
-                        <c:if test="${_page == 1 && st.index == 2}"><span class="ev3-medal">🥉</span></c:if>
+                    <div class="ev3-card">
                         <div class="ev3-card-top">
                             <span class="ev3-avatar">${fn:substring(ev.authorNickname,0,1)}</span>
                             <div class="ev3-author">

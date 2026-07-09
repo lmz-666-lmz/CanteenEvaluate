@@ -11,8 +11,8 @@ public class DBUtil {
     static {
         DRIVER = ConfigUtil.get("db.driver", "com.mysql.cj.jdbc.Driver");
         URL = ConfigUtil.get("db.url", "jdbc:mysql://localhost:3306/canteen_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai");
-        USER = ConfigUtil.get("db.user", "YOUR_DB_USERNAME");
-        PWD = ConfigUtil.get("db.password", "YOUR_DB_PASSWORD");
+        USER = ConfigUtil.get("db.user", "root");
+        PWD = ConfigUtil.get("db.password", "123456");
         try { Class.forName(DRIVER); } catch (ClassNotFoundException e) { e.printStackTrace(); }
     }
 

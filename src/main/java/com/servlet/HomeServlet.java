@@ -23,7 +23,10 @@ public class HomeServlet extends HttpServlet {
         RestaurantDAO restaurantDAO = new RestaurantDAO();
         FoodInsightDAO insightDAO = new FoodInsightDAO();
 
-        List<Restaurant> restaurantList = restaurantDAO.getAllRestaurants();
+        List<Restaurant> allRestaurants = restaurantDAO.getAllRestaurants();
+        // 首页只展示最火的 3 家
+        List<Restaurant> restaurantList = allRestaurants.size() > 3
+                ? allRestaurants.subList(0, 3) : allRestaurants;
         List<InsightCard> mealRecommendations = insightDAO.getHomeMealRecommendations();
 
         try {

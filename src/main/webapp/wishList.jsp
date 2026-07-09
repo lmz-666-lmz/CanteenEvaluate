@@ -44,7 +44,8 @@
                 <div class="user-menu-panel">
                     <a href="${pageContext.request.contextPath}/TasteProfileServlet">🎯 味蕾档案</a>
                     <a href="${pageContext.request.contextPath}/WishListServlet">✅ 想吃清单</a>
-                    <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
+                    <a href="${pageContext.request.contextPath}/AnnouncementServlet">📢 站内公告</a>
+                        <a href="${pageContext.request.contextPath}/AccountServlet">⚙️ 账户设置</a>
                     <a href="${pageContext.request.contextPath}/LogoutServlet" class="danger">⏻ 退出登录</a>
                 </div>
             </details>
@@ -55,7 +56,7 @@
 <main class="feature-shell">
     <section class="feature-hero">
         <div class="feature-panel">
-            <span class="feature-kicker" style="background:#FFF7ED;color:#C2410C;">Wish List · 从种草到打卡</span>
+            <span class="feature-kicker" style="background:#FFF7ED;color:#C2410C;">从种草到打卡</span>
             <div>
                 <h1 class="feature-title">想吃清单</h1>
                 <p class="feature-subtitle">把寻味雷达或同学评价里看到的菜先收起来，吃过后再一键打卡，形成自己的校园美食路线。</p>
@@ -66,9 +67,9 @@
             </div>
         </div>
         <aside class="signal-panel">
-            <div class="signal-title">清单主人</div>
-            <div class="signal-number" style="font-size:28px;"><%= loginUser != null ? loginUser.getNickname() : "" %></div>
-            <p class="signal-muted">清单只和当前账号绑定，不影响全站评价。</p>
+            <div class="signal-title">我的清单</div>
+            <div class="signal-number" style="font-size:24px;"><%= loginUser != null ? loginUser.getNickname() : "" %></div>
+            <p class="signal-muted">收藏心仪菜品，吃完后一键转评价。</p>
         </aside>
     </section>
 

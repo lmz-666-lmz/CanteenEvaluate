@@ -53,66 +53,71 @@ public class AllEvaluateServlet extends HttpServlet {
 
         User currentUser = (User) request.getSession().getAttribute("loginUser");
 
-        List<Evaluation> allEval;
-        if (currentUser != null) {
-            allEval = evalDAO.getAllEvaluationsWithLikeStatus(currentUser.getId());
+        // v1.1: Use SQL-based search for better performance with keyword / minScore / sort
+        boolean useSqlSearch = (keyword != null && !keyword.isEmpty()) || minScore > 0
+                               || "highest".equals(sortBy) || "most_liked".equals(sortBy);
+
+        List<Evaluation> pageList;
+        int totalCount;
+
+        if (useSqlSearch) {
+            // 使用 SQL 端搜索 + 排序 + 分页
+            Integer userId = currentUser != null ? currentUser.getId() : null;
+            List<Evaluation> allEvaluations = evalDAO.searchEvaluations(
+                    keyword, minScore, sortBy, 1, Integer.MAX_VALUE, userId);
+
+            // 餐厅名过滤仍在内存中做（SQL 端拿的是 restaurant_id）
+            if (filterRest != null && !filterRest.isEmpty()) {
+                List<Evaluation> filtered = new ArrayList<>();
+                for (Evaluation e : allEvaluations) {
+                    if (filterRest.equals(e.getRestaurantName())) {
+                        filtered.add(e);
+                    }
+                }
+                allEvaluations = filtered;
+            }
+
+            totalCount = allEvaluations.size();
+            int totalPagesCalc = (int) Math.ceil((double) totalCount / pageSize);
+            if (totalPagesCalc < 1) totalPagesCalc = 1;
+            if (page < 1) page = 1;
+            if (page > totalPagesCalc) page = totalPagesCalc;
+
+            int from = (page - 1) * pageSize;
+            int to = Math.min(from + pageSize, totalCount);
+            pageList = totalCount > 0 ? allEvaluations.subList(from, to) : new ArrayList<>();
         } else {
-            allEval = evalDAO.getAllEvaluationsBySort("newest");
-        }
-
-        if ("highest".equals(sortBy)) {
-            allEval.sort((a, b) -> {
-                double aa = (a.getTasteScore() + a.getPriceScore() + a.getServiceScore()) / 3.0;
-                double bb = (b.getTasteScore() + b.getPriceScore() + b.getServiceScore()) / 3.0;
-                return Double.compare(bb, aa);
-            });
-        } else if ("most_liked".equals(sortBy)) {
-            allEval.sort((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount()));
-        }
-
-        if (filterRest != null && !filterRest.isEmpty()) {
-            List<Evaluation> filtered = new ArrayList<>();
-            for (Evaluation e : allEval) {
-                if (filterRest.equals(e.getRestaurantName())) {
-                    filtered.add(e);
-                }
+            // 原来逻辑：加载全部 + 内存筛选
+            List<Evaluation> allEval;
+            if (currentUser != null) {
+                allEval = evalDAO.getAllEvaluationsWithLikeStatus(currentUser.getId());
+            } else {
+                allEval = evalDAO.getAllEvaluationsBySort("newest");
             }
-            allEval = filtered;
-        }
 
-        if (keyword != null && !keyword.isEmpty()) {
-            String kw = keyword.toLowerCase(Locale.ROOT);
-            List<Evaluation> filtered = new ArrayList<>();
-            for (Evaluation e : allEval) {
-                if (containsIgnoreCase(e.getDishName(), kw)
-                        || containsIgnoreCase(e.getContent(), kw)
-                        || containsIgnoreCase(e.getRestaurantName(), kw)) {
-                    filtered.add(e);
+            if (filterRest != null && !filterRest.isEmpty()) {
+                List<Evaluation> filtered = new ArrayList<>();
+                for (Evaluation e : allEval) {
+                    if (filterRest.equals(e.getRestaurantName())) {
+                        filtered.add(e);
+                    }
                 }
+                allEval = filtered;
             }
-            allEval = filtered;
+
+            totalCount = allEval.size();
+            int totalPagesCalc = (int) Math.ceil((double) totalCount / pageSize);
+            if (totalPagesCalc < 1) totalPagesCalc = 1;
+            if (page < 1) page = 1;
+            if (page > totalPagesCalc) page = totalPagesCalc;
+
+            int from = (page - 1) * pageSize;
+            int to = Math.min(from + pageSize, totalCount);
+            pageList = totalCount > 0 ? allEval.subList(from, to) : new ArrayList<>();
         }
 
-        if (minScore > 0) {
-            List<Evaluation> filtered = new ArrayList<>();
-            for (Evaluation e : allEval) {
-                double avg = (e.getTasteScore() + e.getPriceScore() + e.getServiceScore()) / 3.0;
-                if (avg >= minScore) {
-                    filtered.add(e);
-                }
-            }
-            allEval = filtered;
-        }
-
-        int totalCount = allEval.size();
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         if (totalPages < 1) totalPages = 1;
-        if (page < 1) page = 1;
-        if (page > totalPages) page = totalPages;
-
-        int from = (page - 1) * pageSize;
-        int to = Math.min(from + pageSize, totalCount);
-        List<Evaluation> pageList = totalCount > 0 ? allEval.subList(from, to) : new ArrayList<>();
 
         request.setAttribute("restaurantList", restList);
         request.setAttribute("evalPageList", pageList);
